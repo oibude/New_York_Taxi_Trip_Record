@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Importing libraries
 from pyspark.sql import SparkSession
@@ -59,7 +59,7 @@ columns_to_drop = [column for column, count in null_counts_2 if count > 0.1 * ny
 #Droping columns with more than 10% nulls
 ny_df_subset= ny_df_subset.drop(*columns_to_drop)
 
-#Data transformation
+#Data transformation - filtering invalid datasets
 ny_df_subset=ny_df_subset.filter(
     (f.col('Passenger_Count') > 0.0) &
     (f.col('Trip_Distance') > 0.0) & 
@@ -70,7 +70,7 @@ ny_df_subset=ny_df_subset.filter(
     (f.col("surcharge") >= 0.0)
     )
 
-# Changing data types
+# Define a dictionary for the columns and their desired data types
 columns_to_cast = {
     "Trip_Pickup_DateTime": "timestamp",
     "Trip_Dropoff_DateTime": "timestamp",
@@ -81,7 +81,7 @@ columns_to_cast = {
 # In[22]:
 
 
-#Changing data types
+#Iterate over the disctionary and cast the columns
 for col_name, col_type in columns_to_cast.items():
     ny_df_subset= ny_df_subset.withColumn(col_name, f.col(col_name).cast(col_type))
 
